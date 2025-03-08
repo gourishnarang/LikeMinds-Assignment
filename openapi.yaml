@@ -26,6 +26,8 @@ paths:
                 password:
                   type: string
                   format: password
+                  minLength: 8
+                  maxLength: 128
                   example: securePassword123
       responses:
         '200':
@@ -52,9 +54,25 @@ paths:
                         format: email
                         example: user@example.com
         '400':
-          description: Bad Request (Missing required parameters)
+          description: Bad Request - Invalid input.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Missing email or password."
         '401':
-          description: Unauthorized (Invalid credentials)
+          description: Unauthorized - Invalid credentials.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Invalid credentials."
 
   /api/auth/logout:
     post:
@@ -72,9 +90,17 @@ paths:
                 properties:
                   message:
                     type: string
-                    example: User logged out successfully
+                    example: "User logged out successfully."
         '401':
-          description: Unauthorized (Invalid or expired token)
+          description: Unauthorized - Invalid or expired token.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Invalid authentication token."
 
   /api/auth/register:
     post:
@@ -97,64 +123,41 @@ paths:
                 password:
                   type: string
                   format: password
+                  minLength: 8
+                  maxLength: 128
                   example: securePassword123
       responses:
         '201':
-          description: User registered successfully
+          description: User registered successfully.
+        '400':
+          description: Bad Request - Invalid input.
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  message:
+                  error:
                     type: string
-                    example: User registered successfully
-                  userId:
-                    type: integer
-                    example: 1
-        '400':
-          description: Bad Request (Invalid input data)
+                    example: "Invalid input data."
         '409':
-          description: Conflict (Email already exists)
+          description: Conflict - Email already exists.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "User with this email already exists."
 
   /api/users/{id}:
-    get:
-      summary: Fetch User Profile
-      description: Retrieves the details of a specific user by ID.
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-          example: 1
-      security:
-        - bearerAuth: []
-      responses:
-        '200':
-          description: User details retrieved successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  id:
-                    type: integer
-                    example: 1
-                  name:
-                    type: string
-                    example: John Doe
-                  email:
-                    type: string
-                    format: email
-                    example: user@example.com
-                  createdAt:
-                    type: string
-                    format: date-time
-                    example: 2023-05-01T10:00:00Z
-        '404':
-          description: Not Found (User does not exist)
-
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+        example: 1
     put:
       summary: Update User Details
       description: Updates user profile information.
@@ -176,7 +179,7 @@ paths:
                   example: newemail@example.com
       responses:
         '200':
-          description: User details updated successfully
+          description: User details updated successfully.
           content:
             application/json:
               schema:
@@ -184,32 +187,73 @@ paths:
                 properties:
                   message:
                     type: string
-                    example: User details updated successfully
+                    example: "User details updated successfully."
         '400':
-          description: Bad Request (Invalid input)
+          description: Bad Request - Invalid input.
         '403':
-          description: Forbidden (Unauthorized access)
-
+          description: Forbidden - Unauthorized access.
+        '401':
+          description: Unauthorized - Missing or invalid token.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Token expired or missing."
+    get:
+      summary: Fetch User Profile
+      description: Retrieves the details of a specific user by ID.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: User details retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 1
+                  name:
+                    type: string
+                    example: John Doe
+                  email:
+                    type: string
+                    format: email
+                    example: user@example.com
+                  createdAt:
+                    type: string
+                    format: date-time
+                    example: 2023-05-01T10:00:00Z
+        '404':
+          description: Not Found - User does not exist.
     delete:
       summary: Delete User Account
       description: Permanently removes a user account.
       security:
         - bearerAuth: []
+  
       responses:
         '200':
-          description: User deleted successfully
+          description: User deleted successfully.
+        '403':
+          description: Forbidden - Unauthorized access.
+        '404':
+          description: Not Found - User not found.
+        '401':
+          description: Unauthorized - Missing or invalid token.
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  message:
+                  error:
                     type: string
-                    example: User deleted successfully
-        '403':
-          description: Forbidden (Unauthorized access)
-        '404':
-          description: Not Found (User not found)
+                    example: "Unauthorized request."
 
 components:
   securitySchemes:
