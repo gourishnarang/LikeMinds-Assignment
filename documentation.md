@@ -120,6 +120,9 @@ Retrieves the details of a specific user based on their user ID. Requires authen
 #### Get user details
 **Endpoint:** `GET /api/users/{id}`
 
+**Request Parameters:**
+- `id` (path, integer, required): The user ID whose details need to be retrieved.
+
 **Request Headers:**
 ```json
 {
@@ -147,6 +150,9 @@ Allows users to update their profile information, such as name and email. Requir
 
 #### Modify user profile
 **Endpoint:** `PUT /api/users/{id}`
+
+**Request Parameters:**
+- `id` (path, integer, required): The user ID whose details need to be updated.
 
 **Request Headers:**
 ```json
@@ -182,6 +188,9 @@ Permanently removes a user account from the system. Only authorized users can pe
 
 #### Remove a user from the system
 **Endpoint:** `DELETE /api/users/{id}`
+
+**Request Parameters:**
+- `id` (path, integer, required): The user ID of the account to be deleted.
 
 **Request Headers:**
 ```json
@@ -228,7 +237,6 @@ For reference, the list-view error responses above can be converted into JSON fo
   "message": "Missing required parameters"
 }
 ```
-
 
 ## Assumptions
 - JWT authentication is used for authorization.
